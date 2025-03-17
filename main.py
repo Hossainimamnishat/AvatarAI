@@ -34,7 +34,7 @@ app.mount("/static", StaticFiles(directory=OUTPUT_DIR), name="static")
 # Load Dlib face predictor (fallback)
 FACE_MODEL_PATH = os.path.join(MODEL_DIR, "shape_predictor_68_face_landmarks.dat")
 if not os.path.exists(FACE_MODEL_PATH):
-    raise FileNotFoundError("❌ Face landmark model not found. Place 'shape_predictor_68_face_landmarks.dat' in 'models/'")
+    raise FileNotFoundError("Face landmark model not found. Place 'shape_predictor_68_face_landmarks.dat' in 'models/'")
 
 detector = dlib.get_frontal_face_detector()
 predictor = dlib.shape_predictor(FACE_MODEL_PATH)
@@ -42,7 +42,7 @@ predictor = dlib.shape_predictor(FACE_MODEL_PATH)
 # Load ONNX gender classification model
 GENDER_MODEL_PATH = os.path.join(MODEL_DIR, "gender_model.onnx")
 if not os.path.exists(GENDER_MODEL_PATH):
-    raise FileNotFoundError("❌ Gender classification model not found. Place 'gender_model.onnx' in 'models/'")
+    raise FileNotFoundError("Gender classification model not found. Place 'gender_model.onnx' in 'models/'")
 
 session = ort.InferenceSession(GENDER_MODEL_PATH)
 
@@ -62,7 +62,7 @@ def detect_gender(image):
 
         return "male" if output[0][0] > output[0][1] else "female"
     except Exception as e:
-        print(f"❌ Gender detection error: {e}")
+        print(f" Gender detection error: {e}")
         return "unknown"
 
 def detect_facial_features(image):
@@ -71,11 +71,11 @@ def detect_facial_features(image):
         rgb_image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         results = face_mesh.process(rgb_image)
         if not results.multi_face_landmarks:
-            print("⚠️ No face detected")
+            print("No face detected")
             return None
         return results.multi_face_landmarks[0]  # Return the first face's landmarks
     except Exception as e:
-        print(f"❌ Facial feature detection error: {e}")
+        print(f"Facial feature detection error: {e}")
         return None
 
 def extract_face_texture(image, landmarks):
@@ -99,7 +99,7 @@ def extract_face_texture(image, landmarks):
         Image.fromarray(cv2.cvtColor(face_region, cv2.COLOR_BGR2RGB)).save(texture_path)
         return texture_path
     except Exception as e:
-        print(f"❌ Texture extraction error: {e}")
+        print(f"Texture extraction error: {e}")
         return None
 
 def extract_skin_tone(image, landmarks):
@@ -115,7 +115,7 @@ def extract_skin_tone(image, landmarks):
         skin_tone = cv2.mean(face_region, mask=mask[:, :, 0])
         return skin_tone[:3]  # Return RGB values
     except Exception as e:
-        print(f"❌ Skin tone extraction error: {e}")
+        print(f"Skin tone extraction error: {e}")
         return None
 
 def apply_skin_tone(model, skin_tone):
@@ -125,7 +125,7 @@ def apply_skin_tone(model, skin_tone):
         model.visual.material.baseColorFactor = list(skin_tone) + [1.0]  # Add alpha channel
         return model
     except Exception as e:
-        print(f"❌ Skin tone application error: {e}")
+        print(f"Skin tone application error: {e}")
         return model
 
 def modify_3d_model(model, landmarks):
@@ -142,7 +142,7 @@ def modify_3d_model(model, landmarks):
         model.vertices = vertices
         return model
     except Exception as e:
-        print(f"❌ Error modifying 3D model: {e}")
+        print(f"Error modifying 3D model: {e}")
         return model
 
 def generate_3d_model(gender, landmarks):
